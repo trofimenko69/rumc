@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String          @id @default(uuid())
+  email      String          @unique
+  password   String
+  fullName   String
+  phone      String?
+  role       Role
+  disability DisabilityInfo?
+  parents    Json?
+  type       UserType
+
+  studentInfo  StudentInfo?
+  graduateInfo GraduateInfo?
+  organization Organization?
+  applications Application[]
+  invitations  Invitation[]
+
+  reviewsAsAuthor Review[] @relation("ReviewAuthor")
+  reviewsAsTarget Review[] @relation("ReviewTarget")
+  reviewsByUserId Review[] @relation("UserReviewsByUserId")
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Certificate Certificate[]
+}
+
+model StudentInfo {
+  id               String     @id @default(uuid())
+  user             User       @relation(fields: [userId], references: [id])
+  userId           String     @unique
+  subdivision      String?
+  educationLevel   String?
+  course           Int?
+  educationForm    String?
+  major            String?
+  department       String?
+  group            String?
+  mainProfessions  String[]
+  extraProfessions String[]
+  practices        Practice[]
+  jobs             Job[]
+
+  certificates Certificate[]
+}
+
+model GraduateInfo {
+  id               String        @id @default(uuid())
+  userId           String        @unique
+  user             User          @relation(fields: [userId], references: [id])
+  mainProfessions  String[]
+  extraProfessions String[]
+  jobs             Job[]
+  certificates     Certificate[]
+}
+
+model DisabilityInfo {
+  id          String  @id @default(uuid())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String  @unique
+  group       String
+  type        String
+  documentUrl String?
+}
+
+model Organization {
+  id                 String  @id @default(uuid())
+  userId             String  @unique
+  user               User    @relation(fields: [userId], references: [id])
+  shortName          String
+  fullName           String
+  description        String?
+  website            String?
+  address            String?
+  inn                String
+  kpp                String
+  representativeName String
+  position           String
+  phone              String
+  email              String
+  socialLinks        Json?
+  documentUrl        String?
+
+  practices Practice[]
+  jobs      Job[]
+  reviews   Review[]
+}
+
+model Practice {
+  id             String       @id @default(uuid())
+  type           String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+  city           String
+  professions    String[]
+  availableFor   String[]
+  description    String?
+
+  applicants    Application[]
+  invitations   Invitation[]
+  reviews       Review[]
+  StudentInfo   StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  studentInfoId String?
+}
+
+model Job {
+  id             String       @id @default(uuid())
+  title          String
+  experience     String?
+  salary         String?
+  format         String?
+  city           String
+  professions    String[]
+  availableFor   String[]
+  description    String?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  organizationId String
+
+  applicants     Application[]
+  invitations    Invitation[]
+  reviews        Review[]
+  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  studentInfoId  String?
+  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
+  graduateInfoId String?
+}
+
+model Application {
+  id     String            @id @default(uuid())
+  user   User              @relation(fields: [userId], references: [id])
+  userId String
+  goal   String?
+  status ApplicationStatus
+
+  practice   Practice? @relation(fields: [practiceId], references: [id])
+  practiceId String?
+
+  job   Job?    @relation(fields: [jobId], references: [id])
+  jobId String?
+}
+
+model Invitation {
+  id     String           @id @default(uuid())
+  user   User             @relation(fields: [userId], references: [id])
+  userId String
+  goal   String?
+  status InvitationStatus
+
+  practice   Practice? @relation(fields: [practiceId], references: [id])
+  practiceId String?
+
+  job   Job?    @relation(fields: [jobId], references: [id])
+  jobId String?
+}
+
+model Review {
+  id             String        @id @default(uuid())
+  fromUser       User          @relation("ReviewAuthor", fields: [fromUserId], references: [id])
+  fromUserId     String
+  toOrganization Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  toUser         User?         @relation("ReviewTarget", fields: [toUserId], references: [id])
+  toUserId       String?
+  text           String
+  user           User?         @relation("UserReviewsByUserId", fields: [userId], references: [id])
+  userId         String?
+  Practice       Practice?     @relation(fields: [practiceId], references: [id])
+  practiceId     String?
+  Job            Job?          @relation(fields: [jobId], references: [id])
+  jobId          String?
+}
+
+model Certificate {
+  id             String        @id @default(uuid())
+  url            String
+  name           String
+  owner          User          @relation(fields: [userId], references: [id])
+  userId         String
+  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  studentInfoId  String?
+  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
+  graduateInfoId String?
+}
+
+enum Role {
+  APPLICANT
+  STUDENT
+  GRADUATE
+  ORGANIZATION
+  ADMIN
+  MODERATOR
+  STAFF
+}
+
+enum UserType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
