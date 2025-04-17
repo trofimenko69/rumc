@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "generated"
 }
 
 datasource db {
@@ -21,7 +22,7 @@ model User {
   studentInfo  StudentInfo?
   graduateInfo GraduateInfo?
   organization Organization?
-  agreements     Agreement[]
+  agreements   Agreement[]
 
   reviewsAsAuthor Review[] @relation("ReviewAuthor")
   reviewsAsTarget Review[] @relation("ReviewTarget")
@@ -30,6 +31,7 @@ model User {
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
   Certificate Certificate[]
+
   @@map("user")
 }
 
@@ -50,6 +52,7 @@ model StudentInfo {
   jobs             Job[]
 
   certificates Certificate[]
+
   @@map("studentInfo")
 }
 
@@ -61,6 +64,7 @@ model GraduateInfo {
   extraProfessions String[]      @map("extra_professions")
   jobs             Job[]
   certificates     Certificate[]
+
   @@map("graduateInfo")
 }
 
@@ -71,6 +75,7 @@ model DisabilityInfo {
   group       String
   type        String
   documentUrl String? @map("document_url")
+
   @@map("disabilyInfo")
 }
 
@@ -95,6 +100,7 @@ model Organization {
   practices Practice[]
   jobs      Job[]
   reviews   Review[]
+
   @@map("organization")
 }
 
@@ -108,10 +114,11 @@ model Practice {
   availableFor   String[]     @map("available_for")
   description    String?
 
-  agreements     Agreement[]
+  agreements    Agreement[]
   reviews       Review[]
-  StudentInfo   StudentInfo?  @relation(fields: [studentInfoId], references: [id])
-  studentInfoId String?       @map("student_info_id")
+  StudentInfo   StudentInfo? @relation(fields: [studentInfoId], references: [id])
+  studentInfoId String?      @map("student_info_id")
+
   @@map("practice")
 }
 
@@ -134,13 +141,14 @@ model Job {
   studentInfoId  String?       @map("student_info_id")
   GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
   graduateInfoId String?       @map("graduate_info_id")
+
   @@map("job")
 }
 
 model Agreement {
-  id     String            @id @default(uuid())
-  user   User              @relation(fields: [userId], references: [id])
-  userId String            @map("user_id")
+  id     String  @id @default(uuid())
+  user   User    @relation(fields: [userId], references: [id])
+  userId String  @map("user_id")
   goal   String?
   status Status
 
@@ -149,8 +157,8 @@ model Agreement {
 
   job   Job?    @relation(fields: [jobId], references: [id])
   jobId String? @map("job_id")
-  @@map("agreement")
 
+  @@map("agreement")
 }
 
 model Review {
@@ -168,6 +176,7 @@ model Review {
   practiceId     String?       @map("practice_id")
   Job            Job?          @relation(fields: [jobId], references: [id])
   jobId          String?       @map("job_id")
+
   @@map("review")
 }
 
@@ -181,7 +190,19 @@ model Certificate {
   studentInfoId  String?       @map("student_info_id")
   GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
   graduateInfoId String?       @map("graduate_info_id")
+
   @@map("certificate")
+}
+
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  type      String
+  size      Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("file")
 }
 
 enum Role {
