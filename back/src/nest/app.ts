@@ -11,7 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import * as cookieParser from 'cookie-parser';
 export class App {
   private readonly app: INestApplication;
   private readonly logger: Logger;
@@ -29,7 +29,6 @@ export class App {
     this.logger = new Logger(App.name);
     this.configService = app.get(ConfigService);
     this.apiPort = this.configService.getOrThrow<number>('API_PORT');
-    this.apiVersion = this.configService.getOrThrow<string>('API_VERSION');
     this.apiPrefix = this.configService.getOrThrow<string>('API_PREFIX');
     this.swaggerTitle = this.configService.getOrThrow<string>('SWAGGER_TITLE');
     this.swaggerDescription = this.configService.getOrThrow<string>(
@@ -52,6 +51,10 @@ export class App {
     return this;
   }
 
+  private setCookies(){
+    this.app.use(cookieParser());
+    return this
+  }
   private swaggerConfig() {
     if (!isDev()) {
       return this;
@@ -64,7 +67,7 @@ export class App {
       .build();
     const document = SwaggerModule.createDocument(this.app, options);
     SwaggerModule.setup(
-      `${this.apiPrefix}/:version/${this.swaggerPath}`,
+      `${this.apiPrefix}/${this.swaggerPath}`,
       this.app,
       document,
       {
@@ -114,6 +117,7 @@ export class App {
       .assignInterceptors()
       .assignFilters()
       .swaggerConfig()
+      .setCookies()
       .validationConfig()
       .runApp();
   }
