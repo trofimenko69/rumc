@@ -19,10 +19,11 @@ model User {
   parents    Json?
   type       UserType
 
-  studentInfo  StudentInfo?
-  graduateInfo GraduateInfo?
-  organization Organization?
-  agreements   Agreement[]
+  applicantInfo ApplicantInfo?
+  studentInfo   StudentInfo?
+  graduateInfo  GraduateInfo?
+  organization  Organization?
+  agreements    Agreement[]
 
   reviewsAsAuthor Review[] @relation("ReviewAuthor")
   reviewsAsTarget Review[] @relation("ReviewTarget")
@@ -33,6 +34,16 @@ model User {
   Certificate Certificate[]
 
   @@map("user")
+}
+
+model ApplicantInfo {
+  id             String  @id @default(uuid())
+  user           User    @relation(fields: [userId], references: [id])
+  userId         String  @unique @map("user_id")
+  department     String?
+  specialization String?
+
+  @@map("applicantInfo")
 }
 
 model StudentInfo {

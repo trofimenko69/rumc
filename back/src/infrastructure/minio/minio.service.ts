@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  NotFoundException,
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
@@ -45,10 +46,17 @@ export class MinioService implements OnModuleInit, OnModuleDestroy {
   }
 
   async deleteFile(bucketName: User['id'], fileId: File['id']) {
+    await this.getFile(bucketName, fileId);
     return await this.client.removeObject(bucketName, fileId);
   }
 
   async getFile(bucketName: User['id'], fileId: File['id']) {
-    return await this.client.getObject(bucketName, fileId);
+    const file = await this.client.getObject(bucketName, fileId);
+
+    if (!file) {
+      throw new NotFoundException('Файл не найден');
+    }
+
+    return file;
   }
 }

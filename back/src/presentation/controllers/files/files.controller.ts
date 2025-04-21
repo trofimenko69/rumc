@@ -10,7 +10,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { IFilesService } from '@use-cases/files';
 import { Response } from 'express';
 
@@ -35,11 +41,13 @@ export class FilesController {
         file: {
           type: 'string',
           format: 'binary',
-          description: 'Файл в формате JPG, PNG или GIF',
         },
       },
     },
   })
+  @ApiResponse({ status: 201, description: 'Файл успешно загружен' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiOperation({ summary: 'Загрузка файла' })
   async uploadFile(
     @Param('userId') userId: string,
     @UploadedFile() file: Express.Multer.File,
@@ -58,6 +66,10 @@ export class FilesController {
     type: String,
     description: 'File ID',
   })
+  @ApiResponse({ status: 200, description: 'Файл успешно удален' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 404, description: 'Файл не найден' })
+  @ApiOperation({ summary: 'Удаление файла' })
   async deleteFile(
     @Param('userId') userId: string,
     @Param('fileId') fileId: string,
@@ -76,6 +88,10 @@ export class FilesController {
     type: String,
     description: 'File ID',
   })
+  @ApiResponse({ status: 200, description: 'Файл успешно получен' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @ApiResponse({ status: 404, description: 'Файл не найден' })
+  @ApiOperation({ summary: 'Получение файла по id' })
   async getFile(
     @Param('userId') userId: string,
     @Param('fileId') fileId: string,
