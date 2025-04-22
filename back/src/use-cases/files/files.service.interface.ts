@@ -1,4 +1,4 @@
-import { User } from 'prisma/generated';
+import { User } from '@prisma/client';
 import Stream from 'stream';
 
 export interface FileMetadata {

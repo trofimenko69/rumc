@@ -6,8 +6,8 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { File, User } from '@prisma/client';
 import { Client } from 'minio';
-import { File, User } from 'prisma/generated';
 
 @Injectable()
 export class MinioService implements OnModuleInit, OnModuleDestroy {

@@ -1,4 +1,4 @@
-import { ApplicantInfo, Prisma, User } from 'prisma/generated';
+import { ApplicantInfo, Prisma, User } from '@prisma/client';
 
 export interface IApplicantsService {
   createApplicant(

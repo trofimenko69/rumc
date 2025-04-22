@@ -51,9 +51,9 @@ export class App {
     return this;
   }
 
-  private setCookies(){
+  private setCookies() {
     this.app.use(cookieParser());
-    return this
+    return this;
   }
   private swaggerConfig() {
     if (!isDev()) {

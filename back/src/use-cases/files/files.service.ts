@@ -1,7 +1,7 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
 import { MinioService } from '@infrastructure/minio/minio.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { User } from 'prisma/generated';
+import { User } from '@prisma/client';
 import Stream from 'stream';
 import { FileMetadata, IFilesService } from './files.service.interface';
 

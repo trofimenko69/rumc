@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ApplicantInfo, Prisma, User } from 'prisma/generated';
+import { ApplicantInfo, Prisma, User } from '@prisma/client';
 import { IApplicantsService } from './applicants.service.interface';
 
 @Injectable()

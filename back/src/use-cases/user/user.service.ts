@@ -1,9 +1,8 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
-import { IUserService } from '@use-cases/user/user.interface';
 import { PrismaService } from '@infrastructure/db/prisma.service';
-import { User } from '@prisma/client';
-import { AuthRegisterDto } from '@presentation/dto/auth.dto';
+import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@presentation/dto/user.dto';
+import { User } from '@prisma/client';
+import { IUserService } from '@use-cases/user/user.interface';
 import bcrypt from 'bcrypt';
 @Injectable() // Добавлены скобки
 export class UserService implements IUserService {
@@ -11,31 +10,29 @@ export class UserService implements IUserService {
 
   async findByEmail(email: string): Promise<User> {
     // Логика для поиска пользователя по email
-    const user=await this.prismaService.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { email },
-    })
-    if (!user) throw new BadGatewayException('user not exist')
+    });
+    if (!user) throw new BadGatewayException('user not exist');
 
-    return user
+    return user;
   }
 
-  async findById(id: string):  Promise<User>{
-
-    const user=await this.prismaService.user.findUnique({
+  async findById(id: string): Promise<User> {
+    const user = await this.prismaService.user.findUnique({
       where: { id },
-    })
-    if (!user) throw new BadGatewayException('user not exist')
+    });
+    if (!user) throw new BadGatewayException('user not exist');
 
-    return user
+    return user;
   }
 
-  async find(){
+  async find() {
     // Логика для получения всех пользователей
     return ''; // Верните строку или другую информацию
   }
 
-  async create(dto: CreateUserDto): Promise<User>{
-
+  async create(dto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
     return this.prismaService.user.create({
@@ -44,6 +41,5 @@ export class UserService implements IUserService {
         password: hashedPassword,
       },
     });
-
   }
 }

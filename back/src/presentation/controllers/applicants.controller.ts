@@ -9,8 +9,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApplicantInfo, Prisma } from '@prisma/client';
 import { IApplicantsService } from '@use-cases/applicants';
-import { ApplicantInfo, Prisma } from 'prisma/generated';
 
 @Controller('applicants')
 export class ApplicantsController {
