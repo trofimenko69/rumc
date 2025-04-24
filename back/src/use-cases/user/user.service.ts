@@ -3,7 +3,7 @@ import { BadGatewayException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '@presentation/dto/user.dto';
 import { User } from '@prisma/client';
 import { IUserService } from '@use-cases/user/user.interface';
-import bcrypt from 'bcrypt';
+
 @Injectable() // Добавлены скобки
 export class UserService implements IUserService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -13,7 +13,6 @@ export class UserService implements IUserService {
     const user = await this.prismaService.user.findUnique({
       where: { email },
     });
-    if (!user) throw new BadGatewayException('user not exist');
 
     return user;
   }
@@ -33,13 +32,8 @@ export class UserService implements IUserService {
   }
 
   async create(dto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
-
     return this.prismaService.user.create({
-      data: {
-        ...dto,
-        password: hashedPassword,
-      },
+      data: dto,
     });
   }
 }

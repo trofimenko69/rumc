@@ -1,3 +1,4 @@
+import { IS_PUBLIC_KEY } from '@common/decorators/public.decorator';
 import {
   CanActivate,
   ExecutionContext,
@@ -5,27 +6,46 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Role, User } from '@prisma/client';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+export class RoleGuard implements CanActivate {
+  constructor(
+    private reflector: Reflector,
+    private requiredRole: Role,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (!roles) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    if (isPublic) {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{ user: User }>();
     const user = request.user;
-    if (!user || user?.role === undefined) {
-      throw new ForbiddenException('Access denied');
+
+    if (!user) {
+      return true;
     }
-    const hasRole = roles.some((role) => role === user.role);
-    if (!hasRole) {
-      throw new ForbiddenException('Access denied');
+
+    if (user.role !== this.requiredRole) {
+      throw new ForbiddenException(
+        'У вас недостаточно прав для выполнения этой операции',
+      );
     }
 
     return true;
   }
+}
+
+export function createRoleGuard(role: Role) {
+  return {
+    provide: 'ROLE_GUARD',
+    useFactory: (reflector: Reflector) => new RoleGuard(reflector, role),
+    inject: [Reflector],
+  };
 }
