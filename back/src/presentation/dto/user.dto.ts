@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, UserType } from '@prisma/client';
+import { Prisma, Role, UserType } from '@prisma/client';
 import { IsEmail, IsEnum, IsJSON, IsOptional, IsString } from 'class-validator';
 
-export class CreateUserDto {
-  @IsString()
-  @ApiProperty()
-  id: string;
-
+export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'id'> {
   @IsEmail()
   @ApiProperty()
   email: string;
@@ -36,7 +32,4 @@ export class CreateUserDto {
   @IsEnum(UserType)
   @ApiProperty()
   type: UserType;
-
-  createdAt?: Date; // Дата создания (можно не указывать, если генерируется автоматически)
-  updatedAt?: Date; // Дата обновления (можно не указывать, если генерируется автоматически)
 }

@@ -1,3 +1,4 @@
+import { Auth } from '@common/decorators/auth.decorator';
 import {
   Controller,
   Delete,
@@ -26,6 +27,7 @@ export class FilesController {
     @Inject('filesService') private readonly filesService: IFilesService,
   ) {}
 
+  @Auth()
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   @ApiParam({
@@ -55,6 +57,7 @@ export class FilesController {
     return await this.filesService.uploadFile(userId, file);
   }
 
+  @Auth()
   @Delete(':fileId')
   @ApiParam({
     name: 'userId',
@@ -77,6 +80,7 @@ export class FilesController {
     return await this.filesService.deleteFile(userId, fileId);
   }
 
+  @Auth()
   @Get(':fileId')
   @ApiParam({
     name: 'userId',
