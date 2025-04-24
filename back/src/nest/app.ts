@@ -1,5 +1,5 @@
 import { AppModule } from '@/app.module';
-import { AppConfigSchema, isDev } from '@common/utils';
+import { isDev } from '@common/utils';
 import { ExceptionFilter } from '@infrastructure/filters/exception.filter';
 import { ClientExceptionsInterceptor } from '@infrastructure/interceptors';
 import {
@@ -22,7 +22,7 @@ export class App {
   private readonly swaggerDescription: string;
   private readonly swaggerPath: string;
   private readonly origin: string;
-  private readonly configService: ConfigService<AppConfigSchema, true>;
+  private readonly configService: ConfigService;
 
   constructor(app: INestApplication) {
     this.app = app;
@@ -51,9 +51,9 @@ export class App {
     return this;
   }
 
-  private setCookies(){
+  private setCookies() {
     this.app.use(cookieParser());
-    return this
+    return this;
   }
   private swaggerConfig() {
     if (!isDev()) {

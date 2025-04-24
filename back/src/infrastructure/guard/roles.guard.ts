@@ -1,9 +1,13 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -17,7 +21,7 @@ export class RolesGuard implements CanActivate {
     if (!user || user?.role === undefined) {
       throw new ForbiddenException('Access denied');
     }
-    const hasRole = roles.some(role => role === user.role);
+    const hasRole = roles.some((role) => role === user.role);
     if (!hasRole) {
       throw new ForbiddenException('Access denied');
     }
