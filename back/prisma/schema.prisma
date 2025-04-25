@@ -98,7 +98,7 @@ model Organization {
   description        String?
   website            String?
   address            String?
-  inn                String
+  inn                String  @unique
   kpp                String
   representativeName String  @map("representative_name")
   position           String
@@ -106,6 +106,8 @@ model Organization {
   email              String
   socialLinks        Json?   @map("social_links")
   documentUrl        String? @map("document_url")
+
+  isConfirm Boolean @default(false)
 
   practices Practice[]
   jobs      Job[]

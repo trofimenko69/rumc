@@ -1,4 +1,5 @@
 import { Auth } from '@common/decorators/auth.decorator';
+import { CurrentUser } from '@common/decorators/user.decorator';
 import {
   Controller,
   Delete,
@@ -21,7 +22,7 @@ import {
 import { IFilesService } from '@use-cases/files';
 import { Response } from 'express';
 
-@Controller('files/:userId')
+@Controller('files/')
 export class FilesController {
   constructor(
     @Inject('filesService') private readonly filesService: IFilesService,
@@ -30,11 +31,6 @@ export class FilesController {
   @Auth()
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  @ApiParam({
-    name: 'userId',
-    type: String,
-    description: 'User ID',
-  })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -51,19 +47,14 @@ export class FilesController {
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiOperation({ summary: 'Загрузка файла' })
   async uploadFile(
-    @Param('userId') userId: string,
+    @CurrentUser('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<string> {
-    return await this.filesService.uploadFile(userId, file);
+    return await this.filesService.uploadFile(id, file);
   }
 
   @Auth()
   @Delete(':fileId')
-  @ApiParam({
-    name: 'userId',
-    type: String,
-    description: 'User ID',
-  })
   @ApiParam({
     name: 'fileId',
     type: String,
@@ -74,19 +65,14 @@ export class FilesController {
   @ApiResponse({ status: 404, description: 'Файл не найден' })
   @ApiOperation({ summary: 'Удаление файла' })
   async deleteFile(
-    @Param('userId') userId: string,
+    @CurrentUser('id') id: string,
     @Param('fileId') fileId: string,
   ): Promise<void> {
-    return await this.filesService.deleteFile(userId, fileId);
+    return await this.filesService.deleteFile(id, fileId);
   }
 
   @Auth()
   @Get(':fileId')
-  @ApiParam({
-    name: 'userId',
-    type: String,
-    description: 'User ID',
-  })
   @ApiParam({
     name: 'fileId',
     type: String,
@@ -97,11 +83,11 @@ export class FilesController {
   @ApiResponse({ status: 404, description: 'Файл не найден' })
   @ApiOperation({ summary: 'Получение файла по id' })
   async getFile(
-    @Param('userId') userId: string,
+    @CurrentUser('id') id: string,
     @Param('fileId') fileId: string,
     @Res() res: Response,
   ): Promise<void> {
-    const { file, metadata } = await this.filesService.getFile(userId, fileId);
+    const { file, metadata } = await this.filesService.getFile(id, fileId);
 
     res.setHeader('Content-Type', metadata.type);
     res.setHeader(

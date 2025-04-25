@@ -5,6 +5,9 @@ import {
   ApplicantsModule,
   AuthModule,
   FilesModule,
+  GraduatesModule,
+  OrganizationsModule,
+  StudentsModule,
   TokensModule,
 } from '@nest/modules';
 import { Module } from '@nestjs/common';
@@ -33,6 +36,9 @@ import { getJwtConfig } from './config/jwt.config';
     ApplicantsModule,
     AuthModule,
     TokensModule,
+    StudentsModule,
+    GraduatesModule,
+    OrganizationsModule,
   ],
   providers: [
     Reflector,
