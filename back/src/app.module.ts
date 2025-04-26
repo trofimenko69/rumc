@@ -16,6 +16,7 @@ import { APP_GUARD, Reflector } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { TokensService } from '@use-cases/tokens/tokens.service';
 import { getJwtConfig } from './config/jwt.config';
+import { getMinioConfig } from './config/minio.config';
 
 @Module({
   imports: [
@@ -30,8 +31,12 @@ import { getJwtConfig } from './config/jwt.config';
       useFactory: getJwtConfig,
       inject: [ConfigService],
     }),
+    MinioModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: getMinioConfig,
+      inject: [ConfigService],
+    }),
     PrismaModule,
-    MinioModule,
     FilesModule,
     ApplicantsModule,
     AuthModule,

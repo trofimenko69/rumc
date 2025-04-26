@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiOperation,
@@ -30,6 +31,7 @@ export class FilesController {
 
   @Auth()
   @Post()
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -60,6 +62,7 @@ export class FilesController {
     type: String,
     description: 'File ID',
   })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Файл успешно удален' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 404, description: 'Файл не найден' })
@@ -78,6 +81,7 @@ export class FilesController {
     type: String,
     description: 'File ID',
   })
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, description: 'Файл успешно получен' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
   @ApiResponse({ status: 404, description: 'Файл не найден' })

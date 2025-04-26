@@ -1,27 +1,28 @@
 import {
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { File, User } from '@prisma/client';
 import { Client } from 'minio';
+import { MINIO_OPTIONS, MinioOptions } from './minio-options.interface';
 
 @Injectable()
 export class MinioService implements OnModuleInit, OnModuleDestroy {
   private readonly logger: Logger;
   private readonly client: Client;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(@Inject(MINIO_OPTIONS) private readonly options: MinioOptions) {
     this.logger = new Logger(MinioService.name);
     this.client = new Client({
-      endPoint: this.configService.getOrThrow<string>('MINIO_ENDPOINT'),
-      port: parseInt(this.configService.getOrThrow<string>('MINIO_PORT')),
-      useSSL: this.configService.getOrThrow<string>('MINIO_USE_SSL') === 'true',
-      accessKey: this.configService.getOrThrow<string>('MINIO_ACCESS_KEY'),
-      secretKey: this.configService.getOrThrow<string>('MINIO_SECRET_KEY'),
+      endPoint: this.options.endPoint,
+      port: this.options.port,
+      useSSL: this.options.useSSL,
+      accessKey: this.options.accessKey,
+      secretKey: this.options.secretKey,
     });
   }
 
