@@ -131,6 +131,8 @@ model Practice {
   StudentInfo   StudentInfo? @relation(fields: [studentInfoId], references: [id])
   studentInfoId String?      @map("student_info_id")
 
+  status PracticeStatus @default(DRAFT)
+
   @@map("practice")
 }
 
@@ -236,4 +238,14 @@ enum Status {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+enum PracticeStatus {
+  DRAFT //Организация создает черновик практики
+  PENDING //Организация отправляет на проверку
+  APPROVED //Администратор проверяет и одобряет/отклоняет
+  REJECTED
+  ACTIVE //Организация активирует практику для подачи заявок
+  COMPLETED //После окончания практики
+  ARCHIVED //После завершения всех процессов
 }

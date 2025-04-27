@@ -10,7 +10,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateOrganizationDto } from '@presentation/dto/create.organization.dto';
 import { IOrganizationService } from '@use-cases/organization/organization.service.interface';
 
@@ -23,6 +23,7 @@ export class OrganizationsController {
 
   @Post()
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Регистрация новой организации' })
   @ApiResponse({ status: 201, description: 'Организация успешно создана' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
@@ -39,6 +40,7 @@ export class OrganizationsController {
 
   @Get('id/:id')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение организации по id' })
   @ApiResponse({ status: 200, description: 'Организация успешно получена' })
   @ApiResponse({ status: 404, description: 'Организация не найдена' })
@@ -48,6 +50,7 @@ export class OrganizationsController {
 
   @Get('inn/:inn')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение организации по ИНН' })
   @ApiResponse({ status: 200, description: 'Организация успешно получена' })
   @ApiResponse({ status: 404, description: 'Организация не найдена' })
@@ -57,6 +60,7 @@ export class OrganizationsController {
 
   @Put(':id/confirm')
   @Auth('ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Подтверждение создание организации для админа' })
   @ApiResponse({ status: 200, description: 'Организация успешно подтверждена' })
   @ApiResponse({ status: 404, description: 'Организация не найдена' })
@@ -66,6 +70,7 @@ export class OrganizationsController {
 
   @Put(':id/reject')
   @Auth('ADMIN')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Отклонение создания организации для админа' })
   @ApiResponse({ status: 200, description: 'Организация успешно отклонена' })
   @ApiResponse({ status: 404, description: 'Организация не найдена' })
@@ -75,6 +80,7 @@ export class OrganizationsController {
 
   @Delete(':id')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Удаление организации по id' })
   @ApiResponse({ status: 200, description: 'Организация успешно удалена' })
   @ApiResponse({ status: 404, description: 'Организация не найдена' })

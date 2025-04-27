@@ -9,7 +9,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateGraduateDto } from '@presentation/dto/create.graduate.dto';
 import { IGraduateService } from '@use-cases/graduate/graduate.service.interface';
 
@@ -22,6 +22,7 @@ export class GraduatesController {
 
   @Post('')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Регистрация нового выпускника' })
   @ApiResponse({ status: 201, description: 'Выпускник успешно создан' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
@@ -35,6 +36,7 @@ export class GraduatesController {
 
   @Get('')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение выпускника по id' })
   @ApiResponse({ status: 200, description: 'Выпускник успешно получен' })
   @ApiResponse({ status: 404, description: 'Выпускник не найден' })
@@ -44,6 +46,7 @@ export class GraduatesController {
 
   @Get('email/:email')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение выпускника по email' })
   @ApiResponse({ status: 200, description: 'Выпускник успешно получен' })
   @ApiResponse({ status: 404, description: 'Выпускник не найден' })
@@ -53,6 +56,7 @@ export class GraduatesController {
 
   @Get('all')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение всех выпускников' })
   @ApiResponse({ status: 200, description: 'Выпускники успешно получены' })
   async getAll() {
@@ -61,6 +65,7 @@ export class GraduatesController {
 
   @Delete('')
   @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Удаление выпускника по id' })
   @ApiResponse({ status: 200, description: 'Выпускник успешно удален' })
   @ApiResponse({ status: 404, description: 'Выпускник не найден' })
