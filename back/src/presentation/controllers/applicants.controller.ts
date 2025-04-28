@@ -1,3 +1,4 @@
+import { Auth } from '@common/decorators/auth.decorator';
 import {
   Body,
   Controller,
@@ -8,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApplicantInfo, Prisma } from '@prisma/client';
 import { IApplicantsService } from '@use-cases/applicants';
 
@@ -20,6 +21,8 @@ export class ApplicantsController {
   ) {}
 
   @Post()
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Регистрация нового абитуриента' })
   @ApiResponse({ status: 201, description: 'Абитуриент успешно создан' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
@@ -37,6 +40,8 @@ export class ApplicantsController {
   }
 
   @Get()
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение всех абитуриентов' })
   @ApiResponse({ status: 200, description: 'Абитуриенты успешно получены' })
   async getApplicants(): Promise<ApplicantInfo[]> {
@@ -44,6 +49,8 @@ export class ApplicantsController {
   }
 
   @Get('userId/:id')
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение абитуриента по id' })
   @ApiResponse({ status: 200, description: 'Абитуриент успешно получен' })
   @ApiResponse({ status: 404, description: 'Абитуриент не найден' })
@@ -52,6 +59,8 @@ export class ApplicantsController {
   }
 
   @Get('email/:email')
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение абитуриента по email' })
   @ApiResponse({ status: 200, description: 'Абитуриент успешно получен' })
   @ApiResponse({ status: 404, description: 'Абитуриент не найден' })
@@ -62,6 +71,8 @@ export class ApplicantsController {
   }
 
   @Put(':id')
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Обновление абитуриента' })
   @ApiResponse({ status: 200, description: 'Абитуриент успешно обновлен' })
   @ApiResponse({ status: 400, description: 'Некорректные данные' })
@@ -74,6 +85,8 @@ export class ApplicantsController {
   }
 
   @Delete(':id')
+  @Auth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Удаление абитуриента' })
   @ApiResponse({ status: 200, description: 'Абитуриент успешно удален' })
   @ApiResponse({ status: 404, description: 'Абитуриент не найден' })

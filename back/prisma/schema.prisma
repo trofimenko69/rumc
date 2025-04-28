@@ -98,7 +98,7 @@ model Organization {
   description        String?
   website            String?
   address            String?
-  inn                String
+  inn                String  @unique
   kpp                String
   representativeName String  @map("representative_name")
   position           String
@@ -106,6 +106,8 @@ model Organization {
   email              String
   socialLinks        Json?   @map("social_links")
   documentUrl        String? @map("document_url")
+
+  isConfirm Boolean @default(false)
 
   practices Practice[]
   jobs      Job[]
@@ -128,6 +130,8 @@ model Practice {
   reviews       Review[]
   StudentInfo   StudentInfo? @relation(fields: [studentInfoId], references: [id])
   studentInfoId String?      @map("student_info_id")
+
+  status PracticeStatus @default(DRAFT)
 
   @@map("practice")
 }
@@ -234,4 +238,14 @@ enum Status {
   PENDING
   ACCEPTED
   DECLINED
+}
+
+enum PracticeStatus {
+  DRAFT //Организация создает черновик практики
+  PENDING //Организация отправляет на проверку
+  APPROVED //Администратор проверяет и одобряет/отклоняет
+  REJECTED
+  ACTIVE //Организация активирует практику для подачи заявок
+  COMPLETED //После окончания практики
+  ARCHIVED //После завершения всех процессов
 }

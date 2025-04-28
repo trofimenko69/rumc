@@ -1,3 +1,4 @@
+import { MinioService } from '@infrastructure/minio/minio.service';
 import {
   BadGatewayException,
   Inject,
@@ -6,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { AuthLoginDto, AuthRegisterDto } from '@presentation/dto/auth.dto';
 import { IAuthService } from '@use-cases/auth/auth.interface';
 import { ITokensService } from '@use-cases/tokens/tokens.service.interface';
@@ -24,9 +24,9 @@ export class AuthService implements IAuthService {
     @Inject('tokensService')
     private readonly tokensService: ITokensService,
     private readonly configService: ConfigService,
-    private readonly jwtService: JwtService,
+    private readonly minioService: MinioService,
   ) {
-    this.COOKIE_DOMAIN = configService.getOrThrow<string>('COOKIE_DOMAIN');
+    this.COOKIE_DOMAIN = this.configService.getOrThrow<string>('COOKIE_DOMAIN');
   }
   async login(
     res: Response,
@@ -74,6 +74,7 @@ export class AuthService implements IAuthService {
       password: hashedPassword,
     });
     const result = await this.auth(res, user.id);
+    await this.minioService.createBucket(user.id);
     return result;
   }
 
