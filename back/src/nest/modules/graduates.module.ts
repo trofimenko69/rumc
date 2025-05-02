@@ -1,3 +1,4 @@
+import { GRADUATE_SERVICE_SYMBOL } from '@common/constants';
 import { Module } from '@nestjs/common';
 import { GraduatesController } from '@presentation/controllers';
 import { GraduatesService } from '@use-cases/graduate/graduate.service';
@@ -6,7 +7,7 @@ import { GraduatesService } from '@use-cases/graduate/graduate.service';
   controllers: [GraduatesController],
   providers: [
     {
-      provide: 'graduatesService',
+      provide: GRADUATE_SERVICE_SYMBOL,
       useClass: GraduatesService,
     },
   ],

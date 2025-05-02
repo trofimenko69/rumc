@@ -38,7 +38,7 @@ export class TokensService implements ITokensService {
 
   verifyTokens(token: string): Promise<TTokens> {
     const decoded = this.jwtService.verify(token, {
-      secret: this.configService.getOrThrow<string>('JWT_SECRET'),
+      secret: this.configService.getOrThrow<string>('JWT_SECRET_KEY'),
     });
     return Promise.resolve(decoded);
   }

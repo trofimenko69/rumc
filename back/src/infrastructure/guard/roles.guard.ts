@@ -12,7 +12,7 @@ import { Role, User } from '@prisma/client';
 export class RoleGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
-    private requiredRole: Role,
+    private requiredRoles: Role[], // Изменено: теперь принимает массив ролей
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -29,10 +29,11 @@ export class RoleGuard implements CanActivate {
     const user = request.user;
 
     if (!user) {
-      return true;
+      return false; // Изменено: Возвращает false, если пользователь не найден
     }
 
-    if (user.role !== this.requiredRole) {
+    // Проверка, есть ли у пользователя одна из требуемых ролей
+    if (!this.requiredRoles.includes(user.role)) {
       throw new ForbiddenException(
         'У вас недостаточно прав для выполнения этой операции',
       );
@@ -45,7 +46,7 @@ export class RoleGuard implements CanActivate {
 export function createRoleGuard(role: Role) {
   return {
     provide: 'ROLE_GUARD',
-    useFactory: (reflector: Reflector) => new RoleGuard(reflector, role),
+    useFactory: (reflector: Reflector) => new RoleGuard(reflector, [role]),
     inject: [Reflector],
   };
 }

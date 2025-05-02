@@ -4,32 +4,57 @@ import { IsEmail, IsEnum, IsJSON, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'id'> {
   @IsEmail()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Электронная почта пользователя',
+    example: 'user@example.com',
+  })
   email: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Пароль пользователя',
+    example: 'securePassword123',
+  })
   password: string;
 
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Полное имя пользователя',
+    example: 'Иван Иванов',
+  })
   fullName: string;
 
   @IsOptional()
   @IsString()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Номер телефона пользователя',
+    required: false,
+    example: '+79991234567',
+  })
   phone?: string;
 
   @IsEnum(Role)
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Роль пользователя',
+    enum: Role,
+    example: Role.ADMIN,
+  })
   role: Role;
 
   @IsOptional()
   @IsJSON()
-  @ApiProperty()
-  parents?: any;
+  @ApiProperty({
+    description: 'Родители пользователя в формате JSON',
+    required: false,
+    example: { mother: 'Ирина Иванова', father: 'Сергей Иванов' },
+  })
+  parents?: Prisma.InputJsonValue;
 
   @IsEnum(UserType)
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Тип пользователя',
+    enum: UserType,
+    example: UserType.INDIVIDUAL,
+  })
   type: UserType;
 }

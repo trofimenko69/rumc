@@ -1,3 +1,4 @@
+import { GRADUATE_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import { CurrentUser } from '@common/decorators/user.decorator';
 import {
@@ -16,7 +17,7 @@ import { IGraduateService } from '@use-cases/graduate/graduate.service.interface
 @Controller('graduate')
 export class GraduatesController {
   constructor(
-    @Inject('graduatesService')
+    @Inject(GRADUATE_SERVICE_SYMBOL)
     private readonly graduatesService: IGraduateService,
   ) {}
 

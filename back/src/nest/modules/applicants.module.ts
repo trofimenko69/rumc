@@ -1,3 +1,4 @@
+import { APPLICANTS_SERVICE_SYMBOL } from '@common/constants';
 import { Module } from '@nestjs/common';
 import { ApplicantsController } from '@presentation/controllers';
 import { ApplicantsService } from '@use-cases/applicants';
@@ -6,7 +7,7 @@ import { ApplicantsService } from '@use-cases/applicants';
   controllers: [ApplicantsController],
   providers: [
     {
-      provide: 'applicantsService',
+      provide: APPLICANTS_SERVICE_SYMBOL,
       useClass: ApplicantsService,
     },
   ],

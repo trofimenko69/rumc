@@ -4,10 +4,11 @@ import { UseGuards, applyDecorators } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 
-export type TypeRole = Role;
+export type TypeRole = Role | Role[];
 
-export function Auth(role: TypeRole = Role.APPLICANT) {
+export function Auth(roles: TypeRole = [Role.APPLICANT]) {
+  const rolesArray = Array.isArray(roles) ? roles : [roles];
   return applyDecorators(
-    UseGuards(JwtAuthGuard, new RoleGuard(new Reflector(), role)),
+    UseGuards(JwtAuthGuard, new RoleGuard(new Reflector(), rolesArray)),
   );
 }

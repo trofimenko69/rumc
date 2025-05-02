@@ -51,11 +51,17 @@ export class AuthService implements IAuthService {
   async refreshToken(req: Request, res: Response) {
     const refreshToken = req.cookies['refreshToken'];
 
-    if (!refreshToken)
+    if (!refreshToken) {
       throw new UnauthorizedException('Refresh token not found');
+    }
 
-    const tokens = await this.tokensService.refreshTokens(refreshToken);
-    return this.auth(res, tokens.id);
+    try {
+      const tokens = await this.tokensService.refreshTokens(refreshToken);
+      const userId = tokens.id;
+      return this.auth(res, userId);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   async logout(res: Response) {
