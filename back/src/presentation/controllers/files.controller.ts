@@ -1,3 +1,4 @@
+import { FILES_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import { CurrentUser } from '@common/decorators/user.decorator';
 import {
@@ -26,7 +27,7 @@ import { Response } from 'express';
 @Controller('files/')
 export class FilesController {
   constructor(
-    @Inject('filesService') private readonly filesService: IFilesService,
+    @Inject(FILES_SERVICE_SYMBOL) private readonly filesService: IFilesService,
   ) {}
 
   @Auth()

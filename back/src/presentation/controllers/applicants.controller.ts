@@ -1,3 +1,4 @@
+import { APPLICANTS_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import {
   Body,
@@ -16,7 +17,7 @@ import { IApplicantsService } from '@use-cases/applicants';
 @Controller('applicants')
 export class ApplicantsController {
   constructor(
-    @Inject('applicantsService')
+    @Inject(APPLICANTS_SERVICE_SYMBOL)
     private readonly applicantsService: IApplicantsService,
   ) {}
 

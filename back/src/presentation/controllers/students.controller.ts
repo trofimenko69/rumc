@@ -1,3 +1,4 @@
+import { STUDENT_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import { CurrentUser } from '@common/decorators/user.decorator';
 import {
@@ -16,7 +17,7 @@ import { IStudentService } from '@use-cases/students/students.service.interface'
 @Controller('students')
 export class StudentsController {
   constructor(
-    @Inject('studentsService')
+    @Inject(STUDENT_SERVICE_SYMBOL)
     private readonly studentsService: IStudentService,
   ) {}
 

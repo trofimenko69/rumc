@@ -1,0 +1,9 @@
+export const APPLICANTS_SERVICE_SYMBOL = Symbol('applicantsService');
+export const AUTH_SERVICE_SYMBOL = Symbol('authService');
+export const FILES_SERVICE_SYMBOL = Symbol('filesService');
+export const GRADUATE_SERVICE_SYMBOL = Symbol('graduatesService');
+export const ORGANIZATION_SERVICE_SYMBOL = Symbol('organizationsService');
+export const PRACTICE_SERVICE_SYMBOL = Symbol('practiceService');
+export const STUDENT_SERVICE_SYMBOL = Symbol('studentsService');
+export const TOKENS_SERVICE_SYMBOL = 'tokensService';
+export const USER_SERVICE_SYMBOL = 'userService';

@@ -1,8 +1,13 @@
 import { PrismaService } from '@infrastructure/db/prisma.service';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Organization, Prisma } from '@prisma/client';
 import { IOrganizationService } from './organization.service.interface';
 
+@Injectable()
 export class OrganizationsService implements IOrganizationService {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -18,6 +23,8 @@ export class OrganizationsService implements IOrganizationService {
 
     if (newOrganization)
       throw new ConflictException('Такая организация уже создана');
+
+    console.log(newOrganization);
 
     return await this.prisma.organization.create({
       data: {

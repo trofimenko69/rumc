@@ -17,10 +17,11 @@ export class MinioService implements OnModuleInit, OnModuleDestroy {
 
   constructor(@Inject(MINIO_OPTIONS) private readonly options: MinioOptions) {
     this.logger = new Logger(MinioService.name);
+    this.logger.log(typeof this.options.useSSL);
     this.client = new Client({
       endPoint: this.options.endPoint,
       port: this.options.port,
-      useSSL: this.options.useSSL,
+      useSSL: false,
       accessKey: this.options.accessKey,
       secretKey: this.options.secretKey,
     });

@@ -1,3 +1,4 @@
+import { ORGANIZATION_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import { CurrentUser } from '@common/decorators/user.decorator';
 import {
@@ -17,12 +18,12 @@ import { IOrganizationService } from '@use-cases/organization/organization.servi
 @Controller('organizations')
 export class OrganizationsController {
   constructor(
-    @Inject('organizationsService')
+    @Inject(ORGANIZATION_SERVICE_SYMBOL)
     private readonly organizationService: IOrganizationService,
   ) {}
 
   @Post()
-  @Auth()
+  @Auth('ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Регистрация новой организации' })
   @ApiResponse({ status: 201, description: 'Организация успешно создана' })
@@ -39,7 +40,7 @@ export class OrganizationsController {
   }
 
   @Get('id/:id')
-  @Auth()
+  @Auth(['ADMIN', 'STUDENT', 'ORGANIZATION', 'MODERATOR'])
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение организации по id' })
   @ApiResponse({ status: 200, description: 'Организация успешно получена' })
@@ -49,7 +50,7 @@ export class OrganizationsController {
   }
 
   @Get('inn/:inn')
-  @Auth()
+  @Auth(['ADMIN', 'STUDENT', 'ORGANIZATION', 'MODERATOR'])
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение организации по ИНН' })
   @ApiResponse({ status: 200, description: 'Организация успешно получена' })

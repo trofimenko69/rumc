@@ -1,3 +1,4 @@
+import { ORGANIZATION_SERVICE_SYMBOL } from '@common/constants';
 import { Module } from '@nestjs/common';
 import { OrganizationsController } from '@presentation/controllers';
 import { OrganizationsService } from '@use-cases/organization/organization.service';
@@ -6,7 +7,7 @@ import { OrganizationsService } from '@use-cases/organization/organization.servi
   controllers: [OrganizationsController],
   providers: [
     {
-      provide: 'organizationsService',
+      provide: ORGANIZATION_SERVICE_SYMBOL,
       useClass: OrganizationsService,
     },
   ],

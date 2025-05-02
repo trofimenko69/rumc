@@ -1,3 +1,8 @@
+import {
+  AUTH_SERVICE_SYMBOL,
+  TOKENS_SERVICE_SYMBOL,
+  USER_SERVICE_SYMBOL,
+} from '@common/constants';
 import { JwtStrategy } from '@infrastructure/JWT/jwt.strategy';
 import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -9,9 +14,9 @@ import { UserService } from '@use-cases/user/user.service';
 @Module({
   controllers: [AuthController],
   providers: [
-    { provide: 'authService', useClass: AuthService },
-    { provide: 'tokensService', useClass: TokensService },
-    { provide: 'userService', useClass: UserService },
+    { provide: AUTH_SERVICE_SYMBOL, useClass: AuthService },
+    { provide: TOKENS_SERVICE_SYMBOL, useClass: TokensService },
+    { provide: USER_SERVICE_SYMBOL, useClass: UserService },
     JwtService,
     JwtStrategy,
   ],

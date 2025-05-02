@@ -8,60 +8,56 @@ datasource db {
 }
 
 model User {
-  id         String          @id @default(uuid())
-  email      String          @unique
-  password   String
-  fullName   String          @map("full_name")
-  phone      String?
-  role       Role
-  disability DisabilityInfo?
-  parents    Json?
-  type       UserType
-
-  applicantInfo ApplicantInfo?
-  studentInfo   StudentInfo?
-  graduateInfo  GraduateInfo?
-  organization  Organization?
-  agreements    Agreement[]
-
-  reviewsAsAuthor Review[] @relation("ReviewAuthor")
-  reviewsAsTarget Review[] @relation("ReviewTarget")
-  reviewsByUserId Review[] @relation("UserReviewsByUserId")
-
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  Certificate Certificate[]
+  id              String          @id @default(uuid())
+  email           String          @unique
+  password        String
+  fullName        String          @map("full_name")
+  phone           String?
+  role            Role
+  parents         Json?
+  type            UserType
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  agreements      Agreement[]
+  applicantInfo   ApplicantInfo?
+  Certificate     Certificate[]
+  disability      DisabilityInfo?
+  graduateInfo    GraduateInfo?
+  organization    Organization?
+  reviewsAsAuthor Review[]        @relation("ReviewAuthor")
+  reviewsAsTarget Review[]        @relation("ReviewTarget")
+  reviewsByUserId Review[]        @relation("UserReviewsByUserId")
+  studentInfo     StudentInfo?
 
   @@map("user")
 }
 
 model ApplicantInfo {
   id             String  @id @default(uuid())
-  user           User    @relation(fields: [userId], references: [id])
   userId         String  @unique @map("user_id")
   department     String?
   specialization String?
+  user           User    @relation(fields: [userId], references: [id])
 
   @@map("applicantInfo")
 }
 
 model StudentInfo {
-  id               String     @id @default(uuid())
-  user             User       @relation(fields: [userId], references: [id])
-  userId           String     @unique @map("user_id")
+  id               String        @id @default(uuid())
+  userId           String        @unique @map("user_id")
   subdivision      String?
-  educationLevel   String?    @map("education_level")
+  educationLevel   String?       @map("education_level")
   course           Int?
-  educationForm    String?    @map("education_form")
+  educationForm    String?       @map("education_form")
   major            String?
   department       String?
   group            String?
-  mainProfessions  String[]   @map("main_professions")
-  extraProfessions String[]   @map("extra_professions")
-  practices        Practice[]
+  mainProfessions  String[]      @map("main_professions")
+  extraProfessions String[]      @map("extra_professions")
+  certificates     Certificate[]
   jobs             Job[]
-
-  certificates Certificate[]
+  practices        Practice[]
+  user             User          @relation(fields: [userId], references: [id])
 
   @@map("studentInfo")
 }
@@ -69,127 +65,120 @@ model StudentInfo {
 model GraduateInfo {
   id               String        @id @default(uuid())
   userId           String        @unique @map("user_id")
-  user             User          @relation(fields: [userId], references: [id])
   mainProfessions  String[]      @map("main_professions")
   extraProfessions String[]      @map("extra_professions")
-  jobs             Job[]
   certificates     Certificate[]
+  user             User          @relation(fields: [userId], references: [id])
+  jobs             Job[]
 
   @@map("graduateInfo")
 }
 
 model DisabilityInfo {
   id          String  @id @default(uuid())
-  user        User    @relation(fields: [userId], references: [id])
   userId      String  @unique @map("user_id")
   group       String
   type        String
   documentUrl String? @map("document_url")
+  user        User    @relation(fields: [userId], references: [id])
 
   @@map("disabilyInfo")
 }
 
 model Organization {
-  id                 String  @id @default(uuid())
-  userId             String  @unique @map("user_id")
-  user               User    @relation(fields: [userId], references: [id])
-  shortName          String  @map("short_name")
-  fullName           String  @map("full_name")
+  id                 String     @id @default(uuid())
+  userId             String     @unique @map("user_id")
+  shortName          String     @map("short_name")
+  fullName           String     @map("full_name")
   description        String?
   website            String?
   address            String?
-  inn                String  @unique
+  inn                String     @unique
   kpp                String
-  representativeName String  @map("representative_name")
+  representativeName String     @map("representative_name")
   position           String
   phone              String
   email              String
-  socialLinks        Json?   @map("social_links")
-  documentUrl        String? @map("document_url")
-
-  isConfirm Boolean @default(false)
-
-  practices Practice[]
-  jobs      Job[]
-  reviews   Review[]
+  socialLinks        Json?      @map("social_links")
+  documentUrl        String?    @map("document_url")
+  isConfirm          Boolean    @default(false)
+  jobs               Job[]
+  user               User       @relation(fields: [userId], references: [id])
+  practices          Practice[]
+  reviews            Review[]
 
   @@map("organization")
 }
 
 model Practice {
-  id             String       @id @default(uuid())
+  id             String         @id @default(uuid())
   type           String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
+  organizationId String         @map("organization_id")
   city           String
   professions    String[]
-  availableFor   String[]     @map("available_for")
+  availableFor   String[]       @map("available_for")
   description    String?
-
-  agreements    Agreement[]
-  reviews       Review[]
-  StudentInfo   StudentInfo? @relation(fields: [studentInfoId], references: [id])
-  studentInfoId String?      @map("student_info_id")
-
-  status PracticeStatus @default(DRAFT)
+  studentInfoId  String?        @map("student_info_id")
+  status         PracticeStatus @default(DRAFT)
+  agreements     Agreement[]
+  organization   Organization   @relation(fields: [organizationId], references: [id])
+  StudentInfo    StudentInfo?   @relation(fields: [studentInfoId], references: [id])
+  reviews        Review[]
 
   @@map("practice")
 }
 
 model Job {
-  id             String       @id @default(uuid())
+  id             String        @id @default(uuid())
   title          String
   experience     String?
   salary         String?
   format         String?
   city           String
   professions    String[]
-  availableFor   String[]     @map("available_for")
+  availableFor   String[]      @map("available_for")
   description    String?
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
-
-  agreements     Agreement[]
-  reviews        Review[]
-  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  organizationId String        @map("organization_id")
   studentInfoId  String?       @map("student_info_id")
-  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
   graduateInfoId String?       @map("graduate_info_id")
+  agreements     Agreement[]
+  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  reviews        Review[]
 
   @@map("job")
 }
 
 model Agreement {
-  id     String  @id @default(uuid())
-  user   User    @relation(fields: [userId], references: [id])
-  userId String  @map("user_id")
-  goal   String?
-  status Status
-
-  practice   Practice? @relation(fields: [practiceId], references: [id])
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  goal       String?
+  status     Status
   practiceId String?   @map("practice_id")
-
-  job   Job?    @relation(fields: [jobId], references: [id])
-  jobId String? @map("job_id")
+  jobId      String?   @map("job_id")
+  job        Job?      @relation(fields: [jobId], references: [id])
+  practice   Practice? @relation(fields: [practiceId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
 
   @@map("agreement")
 }
 
 model Review {
   id             String        @id @default(uuid())
-  fromUser       User          @relation("ReviewAuthor", fields: [fromUserId], references: [id])
   fromUserId     String        @map("from_user_id")
-  toOrganization Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?       @map("organization_id")
-  toUser         User?         @relation("ReviewTarget", fields: [toUserId], references: [id])
   toUserId       String?       @map("to_user_id")
   text           String
-  user           User?         @relation("UserReviewsByUserId", fields: [userId], references: [id])
   userId         String?       @map("user_id")
-  Practice       Practice?     @relation(fields: [practiceId], references: [id])
   practiceId     String?       @map("practice_id")
-  Job            Job?          @relation(fields: [jobId], references: [id])
   jobId          String?       @map("job_id")
+  fromUser       User          @relation("ReviewAuthor", fields: [fromUserId], references: [id])
+  Job            Job?          @relation(fields: [jobId], references: [id])
+  toOrganization Organization? @relation(fields: [organizationId], references: [id])
+  Practice       Practice?     @relation(fields: [practiceId], references: [id])
+  toUser         User?         @relation("ReviewTarget", fields: [toUserId], references: [id])
+  user           User?         @relation("UserReviewsByUserId", fields: [userId], references: [id])
 
   @@map("review")
 }
@@ -198,12 +187,12 @@ model Certificate {
   id             String        @id @default(uuid())
   url            String
   name           String
-  owner          User          @relation(fields: [userId], references: [id])
   userId         String        @map("user_id")
-  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
   studentInfoId  String?       @map("student_info_id")
-  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
   graduateInfoId String?       @map("graduate_info_id")
+  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
+  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  owner          User          @relation(fields: [userId], references: [id])
 
   @@map("certificate")
 }
@@ -241,11 +230,11 @@ enum Status {
 }
 
 enum PracticeStatus {
-  DRAFT //Организация создает черновик практики
-  PENDING //Организация отправляет на проверку
-  APPROVED //Администратор проверяет и одобряет/отклоняет
+  DRAFT
+  PENDING
+  APPROVED
   REJECTED
-  ACTIVE //Организация активирует практику для подачи заявок
-  COMPLETED //После окончания практики
-  ARCHIVED //После завершения всех процессов
+  ACTIVE
+  COMPLETED
+  ARCHIVED
 }

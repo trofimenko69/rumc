@@ -4,11 +4,17 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class AuthLoginDto {
   @IsEmail()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Электронная почта пользователя',
+    example: 'user@example.com',
+  })
   email: string;
 
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Пароль пользователя',
+    example: 'securePassword123',
+  })
   password: string;
 }
 

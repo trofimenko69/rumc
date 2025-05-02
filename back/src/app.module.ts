@@ -1,3 +1,4 @@
+import { TOKENS_SERVICE_SYMBOL } from '@common/constants';
 import { PrismaModule } from '@infrastructure/db/prisma.module';
 import { JwtAuthGuard } from '@infrastructure/guard/jwt.guard';
 import { MinioModule } from '@infrastructure/minio/minio.module';
@@ -7,6 +8,7 @@ import {
   FilesModule,
   GraduatesModule,
   OrganizationsModule,
+  PracticeModule,
   StudentsModule,
   TokensModule,
 } from '@nest/modules';
@@ -44,18 +46,19 @@ import { getMinioConfig } from './config/minio.config';
     StudentsModule,
     GraduatesModule,
     OrganizationsModule,
+    PracticeModule,
   ],
   providers: [
     Reflector,
     {
-      provide: 'tokensService',
+      provide: TOKENS_SERVICE_SYMBOL,
       useClass: TokensService,
     },
     {
       provide: APP_GUARD,
       useFactory: (reflector: Reflector, tokensService: TokensService) =>
         new JwtAuthGuard(reflector, tokensService),
-      inject: [Reflector, 'tokensService'],
+      inject: [Reflector, TOKENS_SERVICE_SYMBOL],
     },
   ],
 })

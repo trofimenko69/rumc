@@ -1,3 +1,4 @@
+import { FILES_SERVICE_SYMBOL } from '@common/constants';
 import { Module } from '@nestjs/common';
 import { FilesController } from '@presentation/controllers';
 import { FilesService } from '@use-cases/files';
@@ -6,7 +7,7 @@ import { FilesService } from '@use-cases/files';
   controllers: [FilesController],
   providers: [
     {
-      provide: 'filesService',
+      provide: FILES_SERVICE_SYMBOL,
       useClass: FilesService,
     },
   ],

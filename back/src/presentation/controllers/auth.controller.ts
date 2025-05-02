@@ -1,3 +1,4 @@
+import { AUTH_SERVICE_SYMBOL } from '@common/constants';
 import { Auth } from '@common/decorators/auth.decorator';
 import { Public } from '@common/decorators/public.decorator';
 import { Body, Controller, Inject, Post, Req, Res } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { Request, Response } from 'express';
 @Controller()
 export class AuthController {
   constructor(
-    @Inject('authService') private readonly authService: IAuthService,
+    @Inject(AUTH_SERVICE_SYMBOL) private readonly authService: IAuthService,
   ) {}
 
   @Public()
