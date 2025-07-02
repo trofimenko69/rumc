@@ -8,12 +8,18 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { ITokensService } from '@use-cases/tokens/tokens.service.interface';
+import { IAuthService } from '@use-cases/auth/auth.interface';
+import { AUTH_SERVICE_SYMBOL, TOKENS_SERVICE_SYMBOL } from '@common/constants';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
     private reflector: Reflector,
-    @Inject('tokensService') private tokensService: ITokensService,
+    @Inject(TOKENS_SERVICE_SYMBOL)
+    private readonly tokensService: ITokensService,
+
+    @Inject(AUTH_SERVICE_SYMBOL)
+    private readonly authService: IAuthService,
   ) {
     super();
   }
@@ -29,6 +35,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
 
     const request = context.switchToHttp().getRequest();
+    const response = context.switchToHttp().getResponse();
+
     if (!request.headers) {
       throw new UnauthorizedException('Отсутствуют заголовки запроса');
     }
@@ -45,19 +53,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return result as boolean;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        const refreshToken = request.headers['refresh-token'];
-        if (!refreshToken) {
-          throw new UnauthorizedException(
-            'Токен истек. Необходимо авторизоваться заново',
-          );
-        }
-
         try {
-          const newTokens =
-            await this.tokensService.refreshTokens(refreshToken);
-          request.headers.authorization = `Bearer ${newTokens.access_token}`;
-          request.headers['refresh-token'] = newTokens.refresh_token;
-          request.user = { id: newTokens.id };
+          const { access_token } = await this.authService.refreshToken(request,response);
+          response.setHeader('Authorization', `Bearer ${access_token}`);
           const result = await super.canActivate(context);
           return result as boolean;
         } catch {

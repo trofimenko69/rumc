@@ -2,9 +2,10 @@ import { ORGANIZATION_SERVICE_SYMBOL } from '@common/constants';
 import { PracticeState } from '@common/utils/practice.state-machine';
 import { PrismaService } from '@infrastructure/db/prisma.service';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { PracticeStatus, Prisma } from '@prisma/client';
+import { Practice, PracticeStatus } from '@prisma/client';
 import { IOrganizationService } from '@use-cases/organization/organization.service.interface';
 import { IPracticeService } from './practice.service.interface';
+import { CreatePracticeDto, UpdatePracticeDto } from '@presentation/dto/practice.dto';
 
 @Injectable()
 export class PracticeService implements IPracticeService {
@@ -15,41 +16,49 @@ export class PracticeService implements IPracticeService {
     private readonly organizationService: IOrganizationService,
   ) {}
 
-  async create(data: Prisma.PracticeCreateInput[], organizationId: string) {
-    const organization =
-      await this.organizationService.findById(organizationId);
+  async create(data: CreatePracticeDto) {
 
-    if (!organization) {
-      throw new BadRequestException('Организация не найдена');
+    const group = await this.prisma.group.findUnique({
+      where: {
+        id: data.groupId
+      }
+    })
+
+    if(!group) {
+      throw new BadRequestException('group does not exist');
     }
 
-    const practices = await this.prisma.practice.createMany({
-      data: data.map((item) => ({
-        type: item.type,
-        city: item.city,
-        professions: item.professions,
-        availableFor: item.availableFor,
-        description: item.description,
-        organizationId,
-      })),
-    });
-
-    return practices;
-  }
-
-  async findAll(organizationId: string) {
-    const practices = await this.prisma.practice.findMany({
-      where: {
-        organizationId,
+    const practice = await this.prisma.practice.create({
+      data: {
+        type: data.type,
+        beginDate: data.beginDate,
+        endDate: data.endDate,
+        days: data.days,
+        groupId: data.groupId
       },
     });
 
-    return practices;
+
+    return practice;
   }
-  async findById(id: string) {
+
+  async findAll(){
+    return this.prisma.practice.findMany({
+      include: {
+        group: true,
+      },
+      orderBy: {
+        beginDate: 'asc',
+      },
+    } as const);
+  }
+  async findById(id: string): Promise<Practice> | undefined {
     try {
       const practice = await this.prisma.practice.findUnique({
         where: { id },
+        include: {
+          group: true,
+        }
       });
 
       if (!practice) {
@@ -62,7 +71,7 @@ export class PracticeService implements IPracticeService {
     }
   }
 
-  async update(id: string, data: Prisma.PracticeUpdateInput) {
+  async update(id: string, data: UpdatePracticeDto) {
     const practice = await this.findById(id);
 
     if (!practice) {
@@ -70,7 +79,12 @@ export class PracticeService implements IPracticeService {
     }
     const updatedPractice = await this.prisma.practice.update({
       where: { id },
-      data,
+      data: {
+        type: data.type,
+        beginDate: data.beginDate,
+        endDate: data.endDate,
+        days: data.days
+      },
     });
 
     return updatedPractice;

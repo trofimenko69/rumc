@@ -6,3 +6,5 @@ export { OrganizationsModule } from './organizations.module';
 export { PracticeModule } from './practice.module';
 export { StudentsModule } from './students.module';
 export { TokensModule } from './tokens.module';
+export { AgreementModule } from './agreement.module'
+export { CompetenceModule } from './competence.module'

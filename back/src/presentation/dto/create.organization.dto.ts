@@ -123,15 +123,6 @@ export class CreateOrganizationDto
   isConfirm?: boolean;
 
   @ApiProperty({
-    description: 'Практики, связанные с организацией',
-    required: false,
-    type: 'array',
-    example: [{ id: 1, name: 'Практика 1' }],
-  })
-  @IsOptional()
-  practices?: Prisma.PracticeCreateNestedManyWithoutOrganizationInput;
-
-  @ApiProperty({
     description: 'Вакансии, связанные с организацией',
     required: false,
     type: 'array',

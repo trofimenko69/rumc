@@ -73,7 +73,7 @@ export class OrganizationsService implements IOrganizationService {
     data: Prisma.OrganizationUpdateInput,
   ): Promise<Organization> {
     await this.findById(id);
-    return await this.prisma.organization.update({
+    return this.prisma.organization.update({
       where: {
         id,
       },
@@ -87,6 +87,14 @@ export class OrganizationsService implements IOrganizationService {
       where: {
         id,
       },
+    });
+  }
+
+  async findByUserId(id: string): Promise<Organization> {
+    return this.prisma.organization.findFirst({
+      where: {
+        userId: id,
+      }
     });
   }
 }

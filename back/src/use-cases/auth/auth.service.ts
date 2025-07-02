@@ -34,11 +34,11 @@ export class AuthService implements IAuthService {
   ): Promise<{ access_token: string }> {
     const user = await this.userService.findByEmail(dto.email);
 
-    if (!user) throw new NotFoundException('user no found');
+    if (!user) throw new NotFoundException('пользователь не найден');
 
     const isValidPassword = bcrypt.compareSync(dto.password, user.password);
 
-    if (!isValidPassword) throw new NotFoundException('user no found');
+    if (!isValidPassword) throw new NotFoundException('не правильный пароль');
 
     return this.auth(res, user.id);
   }
@@ -52,7 +52,7 @@ export class AuthService implements IAuthService {
     const refreshToken = req.cookies['refreshToken'];
 
     if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+      throw new UnauthorizedException('refresh_token не существует');
     }
 
     try {
@@ -60,7 +60,7 @@ export class AuthService implements IAuthService {
       const userId = tokens.id;
       return this.auth(res, userId);
     } catch (error) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Не валидный refresh_token');
     }
   }
 
@@ -73,21 +73,19 @@ export class AuthService implements IAuthService {
     dto: AuthRegisterDto,
   ): Promise<{ access_token: string }> {
     const checkUser = await this.userService.findByEmail(dto.email);
-    if (checkUser) throw new BadGatewayException('email already exist');
+    if (checkUser) throw new BadGatewayException('почта уже занята');
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await this.userService.create({
       ...dto,
       password: hashedPassword,
     });
     const result = await this.auth(res, user.id);
-    await this.minioService.createBucket(user.id);
+    //await this.minioService.createBucket(user.id);
     return result;
   }
 
   private async auth(res: Response, id: string) {
-    const { access_token, refresh_token } =
-      this.tokensService.generateTokens(id);
-
+    const { access_token, refresh_token } = this.tokensService.generateTokens(id);
     await this.setCookie(
       res,
       refresh_token,

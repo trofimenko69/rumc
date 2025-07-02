@@ -25,48 +25,31 @@ export class PracticeController {
     private readonly practiceService: IPracticeService,
   ) {}
 
-  @Post(':organizationId')
-  @Auth(['ADMIN', 'ORGANIZATION', 'MODERATOR'])
+  @Post('')
+  @Auth(['ADMIN', 'MODERATOR'])
   @ApiBearerAuth()
-  @ApiParam({
-    name: 'organizationId',
-    type: 'string',
-    description: 'Идентификатор организации',
-  })
-  @ApiBody({ type: [CreatePracticeDto] }) // Ожидаем массив DTO
+  @ApiBody({ type: CreatePracticeDto })
   @ApiResponse({ status: 201, description: 'Практика успешно создана.' })
   @ApiResponse({ status: 400, description: 'Некорректные данные запроса.' })
   @ApiResponse({ status: 401, description: 'Неавторизованный доступ.' })
   async create(
-    @Body() data: CreatePracticeDto[],
-    @Param('organizationId') organizationId: string,
+    @Body() data: CreatePracticeDto,
   ) {
-    const transformedData = data.map((item) => ({
-      ...item,
-      organization: {
-        connect: { id: organizationId },
-      },
-    }));
+
     const practice = await this.practiceService.create(
-      transformedData,
-      organizationId,
+      data,
     );
     return practice;
   }
 
-  @Get(':organizationId')
-  @Auth(['ADMIN', 'ORGANIZATION', 'MODERATOR', 'STUDENT'])
+  @Get('')
+  @Auth(['ADMIN', 'MODERATOR'])
   @ApiBearerAuth()
-  @ApiParam({
-    name: 'organizationId',
-    type: 'string',
-    description: 'Идентификатор организации',
-  })
   @ApiResponse({ status: 200, description: 'Список практик успешно получен.' })
   @ApiResponse({ status: 401, description: 'Неавторизованный доступ.' })
   @ApiResponse({ status: 404, description: 'Организация не найдена.' })
-  async findAll(@Param('organizationId') organizationId: string) {
-    const practices = await this.practiceService.findAll(organizationId);
+  async findAll() {
+    const practices = await this.practiceService.findAll();
     return practices;
   }
 
@@ -87,28 +70,23 @@ export class PracticeController {
   }
 
   @Put(':id')
-  @Auth(['ADMIN', 'ORGANIZATION', 'MODERATOR'])
+  @Auth(['ADMIN', 'MODERATOR'])
   @ApiBearerAuth()
   @ApiParam({
     name: 'id',
     type: 'string',
     description: 'Идентификатор практики',
   })
-  @ApiBody({ type: [UpdatePracticeDto] }) // Ожидаем массив DTO
+  @ApiBody({ type: UpdatePracticeDto })
   @ApiResponse({ status: 200, description: 'Практика успешно обновлена.' })
   @ApiResponse({ status: 400, description: 'Некорректные данные запроса.' })
   @ApiResponse({ status: 401, description: 'Неавторизованный доступ.' })
   @ApiResponse({ status: 404, description: 'Практика не найдена.' })
-  async update(@Param('id') id: string, @Body() data: UpdatePracticeDto[]) {
-    const transformedData = data.map((item) => ({
-      ...item,
-      organization: {
-        connect: { id: item.organization.id },
-      },
-    }));
+  async update(@Param('id') id: string, @Body() data: UpdatePracticeDto) {
+
     const updatedPractice = await this.practiceService.update(
       id,
-      transformedData[0],
+      data
     );
     return updatedPractice;
   }

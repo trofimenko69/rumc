@@ -13,6 +13,7 @@ export class RoleGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private requiredRoles: Role[], // Изменено: теперь принимает массив ролей
+
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
@@ -38,6 +39,7 @@ export class RoleGuard implements CanActivate {
         'У вас недостаточно прав для выполнения этой операции',
       );
     }
+
 
     return true;
   }

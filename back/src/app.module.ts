@@ -1,4 +1,4 @@
-import { TOKENS_SERVICE_SYMBOL } from '@common/constants';
+import { AUTH_SERVICE_SYMBOL, TOKENS_SERVICE_SYMBOL, USER_SERVICE_SYMBOL } from '@common/constants';
 import { PrismaModule } from '@infrastructure/db/prisma.module';
 import { JwtAuthGuard } from '@infrastructure/guard/jwt.guard';
 import { MinioModule } from '@infrastructure/minio/minio.module';
@@ -11,6 +11,9 @@ import {
   PracticeModule,
   StudentsModule,
   TokensModule,
+  AgreementModule,
+  CompetenceModule,
+
 } from '@nest/modules';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -19,6 +22,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { TokensService } from '@use-cases/tokens/tokens.service';
 import { getJwtConfig } from './config/jwt.config';
 import { getMinioConfig } from './config/minio.config';
+import { AuthService } from '@use-cases/auth/auth.service';
+import { UserService } from '@use-cases/user/user.service';
+import { ITokensService } from '@use-cases/tokens/tokens.service.interface';
+import { IAuthService } from '@use-cases/auth/auth.interface';
 
 @Module({
   imports: [
@@ -47,18 +54,30 @@ import { getMinioConfig } from './config/minio.config';
     GraduatesModule,
     OrganizationsModule,
     PracticeModule,
+    AgreementModule,
+    CompetenceModule
   ],
   providers: [
-    Reflector,
+    {
+      provide: USER_SERVICE_SYMBOL,
+      useClass: UserService,
+    },
     {
       provide: TOKENS_SERVICE_SYMBOL,
       useClass: TokensService,
     },
     {
+      provide: AUTH_SERVICE_SYMBOL,
+      useClass: AuthService,
+    },
+    {
       provide: APP_GUARD,
-      useFactory: (reflector: Reflector, tokensService: TokensService) =>
-        new JwtAuthGuard(reflector, tokensService),
-      inject: [Reflector, TOKENS_SERVICE_SYMBOL],
+      useFactory: (
+        reflector: Reflector,
+        tokensService: ITokensService,
+        authService: IAuthService,
+      ) => new JwtAuthGuard(reflector, tokensService, authService),
+      inject: [Reflector, TOKENS_SERVICE_SYMBOL, AUTH_SERVICE_SYMBOL],
     },
   ],
 })

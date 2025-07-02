@@ -22,7 +22,7 @@ export class StudentsController {
   ) {}
 
   @Post('')
-  @Auth()
+  @Auth('ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Регистрация нового студента' })
   @ApiResponse({ status: 201, description: 'Студент успешно создан' })
@@ -45,6 +45,17 @@ export class StudentsController {
     return await this.studentsService.findById(id);
   }
 
+  @Get('self')
+  @Auth('STUDENT')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Получение студента по токену' })
+  @ApiResponse({ status: 200, description: 'Студент успешно получен' })
+  @ApiResponse({ status: 404, description: 'Студент не найден' })
+  async self(@CurrentUser('id') id: string) {
+    return await this.studentsService.self(id)
+  }
+
+
   @Get('email/:email')
   @Auth()
   @ApiBearerAuth()
@@ -56,7 +67,7 @@ export class StudentsController {
   }
 
   @Get('all')
-  @Auth()
+  @Auth('ADMIN')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение всех студентов' })
   @ApiResponse({ status: 200, description: 'Студенты успешно получены' })

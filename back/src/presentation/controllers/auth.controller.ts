@@ -6,7 +6,7 @@ import { AuthLoginDto, AuthRegisterDto } from '@presentation/dto/auth.dto';
 import { IAuthService } from '@use-cases/auth/auth.interface';
 import { Request, Response } from 'express';
 
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     @Inject(AUTH_SERVICE_SYMBOL) private readonly authService: IAuthService,

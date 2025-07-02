@@ -7,3 +7,6 @@ export const PRACTICE_SERVICE_SYMBOL = Symbol('practiceService');
 export const STUDENT_SERVICE_SYMBOL = Symbol('studentsService');
 export const TOKENS_SERVICE_SYMBOL = 'tokensService';
 export const USER_SERVICE_SYMBOL = 'userService';
+export const AGREEMENTS_SERVICE_SYMBOL = 'agreementService';
+export const JOBS_SERVICE_SYMBOL = 'jobService';
+export const COMPETENCE_SERVICE_SYMBOL = 'competenceService';

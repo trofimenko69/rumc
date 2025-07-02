@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prisma, Role, UserType } from '@prisma/client';
-import { IsEmail, IsEnum, IsJSON, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsJSON, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'id'> {
   @IsEmail()
@@ -42,7 +42,7 @@ export class CreateUserDto implements Omit<Prisma.UserCreateInput, 'id'> {
   role: Role;
 
   @IsOptional()
-  @IsJSON()
+  @IsObject()
   @ApiProperty({
     description: 'Родители пользователя в формате JSON',
     required: false,

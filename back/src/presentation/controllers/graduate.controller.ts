@@ -13,6 +13,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateGraduateDto } from '@presentation/dto/create.graduate.dto';
 import { IGraduateService } from '@use-cases/graduate/graduate.service.interface';
+import { Public } from '@common/decorators/public.decorator';
 
 @Controller('graduate')
 export class GraduatesController {
@@ -56,7 +57,7 @@ export class GraduatesController {
   }
 
   @Get('all')
-  @Auth()
+  @Public()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Получение всех выпускников' })
   @ApiResponse({ status: 200, description: 'Выпускники успешно получены' })

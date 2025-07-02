@@ -1,27 +1,25 @@
 import {
   ORGANIZATION_SERVICE_SYMBOL,
-  PRACTICE_SERVICE_SYMBOL,
+  COMPETENCE_SERVICE_SYMBOL,
 } from '@common/constants';
-import { PracticeState } from '@common/utils/practice.state-machine';
 import { forwardRef, Module } from '@nestjs/common';
-import { PracticeController } from '@presentation/controllers';
+import { CompetenceController } from '@presentation/controllers';
 import { OrganizationsService } from '@use-cases/organization/organization.service';
-import { PracticeService } from '@use-cases/practice/practice.service';
+import { CompetenceService } from '@use-cases/competence/competence.service';
 import { AuthModule } from '@nest/modules/auth.module';
 
 @Module({
-  controllers: [PracticeController],
+  controllers: [CompetenceController],
   imports: [forwardRef(() => AuthModule)],
   providers: [
     {
-      provide: PRACTICE_SERVICE_SYMBOL,
-      useClass: PracticeService,
+      provide: COMPETENCE_SERVICE_SYMBOL,
+      useClass: CompetenceService,
     },
     {
       provide: ORGANIZATION_SERVICE_SYMBOL,
       useClass: OrganizationsService,
     },
-    PracticeState,
   ],
 })
-export class PracticeModule {}
+export class CompetenceModule {}

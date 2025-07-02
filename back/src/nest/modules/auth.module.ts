@@ -20,5 +20,6 @@ import { UserService } from '@use-cases/user/user.service';
     JwtService,
     JwtStrategy,
   ],
+  exports: [USER_SERVICE_SYMBOL, TOKENS_SERVICE_SYMBOL, AUTH_SERVICE_SYMBOL],
 })
 export class AuthModule {}

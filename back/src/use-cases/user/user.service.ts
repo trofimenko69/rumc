@@ -21,7 +21,7 @@ export class UserService implements IUserService {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
-    if (!user) throw new BadGatewayException('user not exist');
+    if (!user) throw new BadGatewayException('Пользователь не найден');
 
     return user;
   }

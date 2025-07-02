@@ -6,6 +6,7 @@ export interface IOrganizationService {
     id: string,
   ): Promise<Organization>;
   findById(id: string): Promise<Organization>;
+  findByUserId(id: string): Promise<Organization>;
   findByInn(inn: string): Promise<Organization>;
   confirm(id: string): Promise<Organization>;
   reject(id: string): Promise<void>;
