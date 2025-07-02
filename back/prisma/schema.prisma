@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -8,166 +9,287 @@ datasource db {
 }
 
 model User {
-  id         String          @id @default(uuid())
-  email      String          @unique
-  password   String
-  fullName   String          @map("full_name")
-  phone      String?
-  role       Role
-  disability DisabilityInfo?
-  parents    Json?
-  type       UserType
+  id              String          @id @default(uuid())
+  email           String          @unique
+  password        String
+  fullName        String          @map("full_name")
+  phone           String?
+  role            Role
+  parents         Json?
+  type            UserType
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  agreements      Agreement[]
+  applicantInfo   ApplicantInfo?
+  Certificate     Certificate[]
+  disability      DisabilityInfo?
+  graduateInfo    GraduateInfo?
+  organization    Organization?
+  reviewsAsAuthor Review[]        @relation("ReviewAuthor")
+  reviewsAsTarget Review[]        @relation("ReviewTarget")
+  reviewsByUserId Review[]        @relation("UserReviewsByUserId")
+  studentInfo     StudentInfo?
 
-  studentInfo  StudentInfo?
-  graduateInfo GraduateInfo?
-  organization Organization?
-  agreements     Agreement[]
-
-  reviewsAsAuthor Review[] @relation("ReviewAuthor")
-  reviewsAsTarget Review[] @relation("ReviewTarget")
-  reviewsByUserId Review[] @relation("UserReviewsByUserId")
-
-  createdAt   DateTime      @default(now()) @map("created_at")
-  updatedAt   DateTime      @updatedAt @map("updated_at")
-  Certificate Certificate[]
   @@map("user")
 }
 
-model StudentInfo {
-  id               String     @id @default(uuid())
-  user             User       @relation(fields: [userId], references: [id])
-  userId           String     @unique @map("user_id")
-  subdivision      String?
-  educationLevel   String?    @map("education_level")
-  course           Int?
-  educationForm    String?    @map("education_form")
-  major            String?
-  department       String?
-  group            String?
-  mainProfessions  String[]   @map("main_professions")
-  extraProfessions String[]   @map("extra_professions")
-  practices        Practice[]
-  jobs             Job[]
 
-  certificates Certificate[]
+model ApplicantInfo {
+  id             String  @id @default(uuid())
+  userId         String  @unique @map("user_id")
+  department     String?
+  specialization String?
+  user           User    @relation(fields: [userId], references: [id])
+
+  @@map("applicantInfo")
+}
+
+model StudentInfo {
+  id               String        @id @default(uuid())
+  userId           String        @unique @map("user_id")
+  subdivision      String?
+  major            String?
+  mainProfessions  String[]      @map("main_professions")
+  extraProfessions String[]      @map("extra_professions")
+  certificates     Certificate[]
+  groupId String @map("group_id")
+  group Group @relation(fields: [groupId], references: [id])
+  jobs             Job[]
+  competenceInPractice CompetenceInPractice []
+  user             User          @relation(fields: [userId], references: [id])
+
   @@map("studentInfo")
 }
 
 model GraduateInfo {
   id               String        @id @default(uuid())
   userId           String        @unique @map("user_id")
-  user             User          @relation(fields: [userId], references: [id])
   mainProfessions  String[]      @map("main_professions")
   extraProfessions String[]      @map("extra_professions")
-  jobs             Job[]
   certificates     Certificate[]
+  user             User          @relation(fields: [userId], references: [id])
+  jobs             Job[]
+
   @@map("graduateInfo")
 }
 
 model DisabilityInfo {
   id          String  @id @default(uuid())
-  user        User    @relation(fields: [userId], references: [id])
   userId      String  @unique @map("user_id")
   group       String
   type        String
   documentUrl String? @map("document_url")
+  user        User    @relation(fields: [userId], references: [id])
+
   @@map("disabilyInfo")
 }
 
 model Organization {
-  id                 String  @id @default(uuid())
-  userId             String  @unique @map("user_id")
-  user               User    @relation(fields: [userId], references: [id])
-  shortName          String  @map("short_name")
-  fullName           String  @map("full_name")
+  id                 String     @id @default(uuid())
+  userId             String     @unique @map("user_id")
+  shortName          String     @map("short_name")
+  fullName           String     @map("full_name")
   description        String?
   website            String?
   address            String?
-  inn                String
+  inn                String     @unique
   kpp                String
-  representativeName String  @map("representative_name")
+  representativeName String     @map("representative_name")
   position           String
   phone              String
   email              String
-  socialLinks        Json?   @map("social_links")
-  documentUrl        String? @map("document_url")
+  socialLinks        Json?      @map("social_links")
+  documentUrl        String?    @map("document_url")
+  isConfirm          Boolean    @default(false)
+  jobs               Job[]
+  user               User       @relation(fields: [userId], references: [id])
+  competencions      Competence[]
+  reviews            Review[]
 
-  practices Practice[]
-  jobs      Job[]
-  reviews   Review[]
   @@map("organization")
 }
 
-model Practice {
-  id             String       @id @default(uuid())
-  type           String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
-  city           String
-  professions    String[]
-  availableFor   String[]     @map("available_for")
-  description    String?
+model Nosology {
+  id        String           @id @default(uuid())
+  name      String
+  jobs      JobNosology[]      @relation("JobNosology")
+  competence CompetenceNosology[]
+  @@map("nosology")
+}
 
-  agreements     Agreement[]
-  reviews       Review[]
-  StudentInfo   StudentInfo?  @relation(fields: [studentInfoId], references: [id])
-  studentInfoId String?       @map("student_info_id")
+model Practice {
+  id             String            @id @default(uuid())
+  type           String
+  beginDate      DateTime @db.Date @map("begin_date")
+  endDate        DateTime @db.Date @map("end_date")
+  days           Int
+  status         PracticeStatus    @default(DRAFT)
+  reviews        Review[]
+  groupId String @map("group_id")
+  group Group @relation(fields: [groupId], references: [id])
+  competenceInPractice CompetenceInPractice []
   @@map("practice")
 }
 
+model AgreementInfo {
+  id String @id @default(uuid())
+  fio String?
+  phone String?
+  appointment String?
+  roomName String?
+  roomAddress String?
+  equipmentList String?
+  contractSignUniversity Boolean? @map("contract_sign_university")
+  contractSignCompany Boolean? @map("contract_sign_company")
+  acceptedCompanyAt DateTime? @map("accepted_company_at")
+  acceptedCareerAt DateTime? @map("accepted_career_at")
+  agreementId String @unique @map("agreement_id")
+  agreement  Agreement @relation(fields: [agreementId], references: [id])
+  @@map("agreement_info")
+}
+
 model Job {
-  id             String       @id @default(uuid())
+  id             String          @id @default(uuid())
   title          String
   experience     String?
   salary         String?
   format         String?
   city           String
-  professions    String[]
-  availableFor   String[]     @map("available_for")
+  profession     String
   description    String?
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  organizationId String       @map("organization_id")
-
+  organizationId String          @map("organization_id")
+  studentInfoId  String?         @map("student_info_id")
+  graduateInfoId String?         @map("graduate_info_id")
   agreements     Agreement[]
+  graduateInfo   GraduateInfo?   @relation(fields: [graduateInfoId], references: [id])
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  studentInfo    StudentInfo?    @relation(fields: [studentInfoId], references: [id])
   reviews        Review[]
-  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
-  studentInfoId  String?       @map("student_info_id")
-  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
-  graduateInfoId String?       @map("graduate_info_id")
+  nosologies JobNosology[] @relation("JobNosology")
+
   @@map("job")
 }
 
+model CompetenceNosology {
+  id         String   @id @default(uuid())
+  competenceId String   @map("competence_id")
+  nosologyId String   @map("nosology_id")
+  competence   Competence @relation(fields: [competenceId], references: [id])
+  nosology Nosology @relation(fields: [nosologyId], references: [id])
+  @@map("competence_nosology")
+}
+
+model Competence {
+  id String @id @default(uuid())
+  fileid String
+  profession String
+  address String
+  capacity Int
+  nosologies CompetenceNosology[]
+  organizationId String @map("organization_id")
+  organization Organization @relation(fields: [organizationId], references: [id])
+  competenceInPractice CompetenceInPractice []
+  @@map("competence")
+}
+
+model CompetenceInPractice {
+  id String @id @default(uuid())
+  studentId String  @map("student_id")
+  practiceId String  @map("practice_id")
+  competenceId String  @map("competence_id")
+
+  student StudentInfo @relation(fields: [studentId], references: [id])
+  practice Practice @relation(fields: [practiceId], references: [id])
+  competence Competence @relation(fields: [competenceId], references: [id])
+  agreements     Agreement[]
+
+  @@unique([competenceId, studentId, practiceId])
+  @@map("competence_in_practice")
+}
+
+model Group {
+  id         String   @id @default(uuid())
+  name       String
+  course     Int
+  educationForm    String?       @map("education_form")
+  educationLevel   String?       @map("education_level")
+  specialityId String @map("speciality_id")
+  students StudentInfo[]
+  practice Practice []
+  speciality Speciality @relation(fields: [specialityId], references: [id])
+  @@map("group")
+}
+
+model Department {
+  name String @unique
+  shortName String
+  specialtyInDepartment SpecialtyInDepartment []
+  @@map("department")
+}
+
+model Speciality {
+  id String @id
+  name String
+  specialtyInDepartment SpecialtyInDepartment []
+  group Group []
+  @@map("speciality")
+}
+
+model SpecialtyInDepartment {
+  id String @id @default(uuid())
+  specialityId String @map("speciality_id")
+  departmentId String @map("demartment_id")
+  speciality Speciality  @relation(fields: [specialityId], references: [id])
+  department Department  @relation(fields: [departmentId], references: [name])
+  @@map("speciality_in_department")
+}
+
+
+model JobNosology {
+  id         String @id @default(uuid())
+  jobId      String @map("job_id")
+  nosologyId String @map("nosology_id")
+  job        Job    @relation("JobNosology", fields: [jobId], references: [id])
+  nosology   Nosology @relation("JobNosology", fields: [nosologyId], references: [id])
+  @@map("job_nosology")
+}
+
+
+
 model Agreement {
-  id     String            @id @default(uuid())
-  user   User              @relation(fields: [userId], references: [id])
-  userId String            @map("user_id")
-  goal   String?
-  status Status
+  id         String    @id @default(uuid())
+  userId     String    @map("user_id")
+  goal       String?
+  status     Status
+  who        WHO
+  type       TypeAgreement
+  competeneceInPracticeId String?   @map("competenece_in_practice_id")
+  jobId      String?   @map("job_id")
+  job        Job?      @relation(fields: [jobId], references: [id])
+  competeneceInPractice   CompetenceInPractice? @relation(fields: [competeneceInPracticeId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
+  agreementInfo AgreementInfo?
 
-  practice   Practice? @relation(fields: [practiceId], references: [id])
-  practiceId String?   @map("practice_id")
-
-  job   Job?    @relation(fields: [jobId], references: [id])
-  jobId String? @map("job_id")
+  @@unique([userId, competeneceInPracticeId])
   @@map("agreement")
-
 }
 
 model Review {
   id             String        @id @default(uuid())
-  fromUser       User          @relation("ReviewAuthor", fields: [fromUserId], references: [id])
   fromUserId     String        @map("from_user_id")
-  toOrganization Organization? @relation(fields: [organizationId], references: [id])
   organizationId String?       @map("organization_id")
-  toUser         User?         @relation("ReviewTarget", fields: [toUserId], references: [id])
   toUserId       String?       @map("to_user_id")
   text           String
-  user           User?         @relation("UserReviewsByUserId", fields: [userId], references: [id])
   userId         String?       @map("user_id")
-  Practice       Practice?     @relation(fields: [practiceId], references: [id])
   practiceId     String?       @map("practice_id")
-  Job            Job?          @relation(fields: [jobId], references: [id])
   jobId          String?       @map("job_id")
+  fromUser       User          @relation("ReviewAuthor", fields: [fromUserId], references: [id])
+  Job            Job?          @relation(fields: [jobId], references: [id])
+  toOrganization Organization? @relation(fields: [organizationId], references: [id])
+  Practice       Practice?     @relation(fields: [practiceId], references: [id])
+  toUser         User?         @relation("ReviewTarget", fields: [toUserId], references: [id])
+  user           User?         @relation("UserReviewsByUserId", fields: [userId], references: [id])
+
   @@map("review")
 }
 
@@ -175,13 +297,25 @@ model Certificate {
   id             String        @id @default(uuid())
   url            String
   name           String
-  owner          User          @relation(fields: [userId], references: [id])
   userId         String        @map("user_id")
-  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
   studentInfoId  String?       @map("student_info_id")
-  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
   graduateInfoId String?       @map("graduate_info_id")
+  GraduateInfo   GraduateInfo? @relation(fields: [graduateInfoId], references: [id])
+  StudentInfo    StudentInfo?  @relation(fields: [studentInfoId], references: [id])
+  owner          User          @relation(fields: [userId], references: [id])
+
   @@map("certificate")
+}
+
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  type      String
+  size      Int
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("file")
 }
 
 enum Role {
@@ -200,7 +334,32 @@ enum UserType {
 }
 
 enum Status {
-  PENDING
-  ACCEPTED
+  IN_PROGRESS
   DECLINED
+  WAITING
+  ACCEPTED
+  DOCUMENTS_DECLINED
+  DOCUMENTS_ACCEPTED
+  IGNORED
+}
+
+enum PracticeStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TypeAgreement {
+  JOB
+  PRACTICE
+}
+
+
+enum WHO {
+  USER
+  ORGANIZATION
 }
